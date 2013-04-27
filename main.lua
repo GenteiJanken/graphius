@@ -56,15 +56,22 @@ function love.draw()
 
 end
 
---mouse controls if 
+--mouse controls activated in GRAPH state
 function love.mousepressed(x, y, button)
 
+	if game_state == "GRAPH" then
+
+	end
 end
 
 function love.mousereleased(x, y, button)
 
+	if game_state == "GRAPH" then
+
+	end
 end
 
+--tab toggled FLIGHT/GRAPH, other keys only activated in FLIGHT
 function love.keypressed(key)
 	--toggles between graph view and flight view
 	if key == 'tab' then
@@ -95,7 +102,7 @@ end
 function stars:update(dt)
 	for i = 1, 3 do
 		for j = 1, 20 do
-			self.starmap[i][j].y = (self.starmap[i][j].y + 4 - i) % SCREEN_HEIGHT 
+			self.starmap[i][j].y = (self.starmap[i][j].y + (4 - i) * 4) % SCREEN_HEIGHT 
 		end
 	end
 end
@@ -138,7 +145,8 @@ function techgraph:draw()
 end
 
 function techgraph:init()
-	
+		
+	self.shards = {}
 	self.nodes = {A = "GREY",
 					B = "GREY", 
 					C = "GREY", 
@@ -192,6 +200,15 @@ function techgraph:can_colour(node, colour)
 	--else accept
 	return true
 
+end
+
+function techgraph:add_shard(colour)
+	
+	--if shard queue full, first make space
+	if #self.shards == 10 then
+		table.remove(self.shards, #self.shards)
+	end
+	table.insert(self.shards, colour, 1)
 end
 
 function midpoint(p1, p2)
