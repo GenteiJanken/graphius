@@ -52,22 +52,26 @@ function love.draw()
 	--in GRAPH mode, draw graph
 	if game_state == "GRAPH" then
 		techgraph:draw()
+	elseif game_state == "DRAG" then
+	
 	end
-
+	
+	
 end
 
---mouse controls activated in GRAPH state
+--mouse controls activated in GRAPH/DRAG state
 function love.mousepressed(x, y, button)
 
-	if game_state == "GRAPH" then
-
+	if game_state == "GRAPH" and button == "l" then
+		techgraph:grab_shard(x, y)
+		
 	end
 end
 
 function love.mousereleased(x, y, button)
 
-	if game_state == "GRAPH" then
-
+	if game_state == "DRAG" then
+		
 	end
 end
 
@@ -123,8 +127,11 @@ function techgraph:draw()
 	love.graphics.setColor(unpack(WINDOW_COLOUR))
 	love.graphics.rectangle("fill",0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
 	
-	--draw colour options
-
+	--draw shards
+	for i, v in ipairs(self.shards) do
+		love.graphics.setColor(unpack(NODE_COLOURS[v]))
+		love.graphics.rectangle("fill", self.shard_offset[1] * i, self.shard_offset[2], 20, 20)   
+	end
 	--draw graph
 	--edges
 		for _, v in ipairs(self.edges) do
@@ -146,7 +153,10 @@ end
 
 function techgraph:init()
 		
-	self.shards = {}
+	self.shards = {"RED", "GREEN", "BLUE"}
+	self.shard_offset = {25, 50}
+	self.shard_drag = nil
+
 	self.nodes = {A = "GREY",
 					B = "GREY", 
 					C = "GREY", 
@@ -209,6 +219,10 @@ function techgraph:add_shard(colour)
 		table.remove(self.shards, #self.shards)
 	end
 	table.insert(self.shards, colour, 1)
+end
+
+function techgraph:grab_shard(x, y)
+
 end
 
 function midpoint(p1, p2)
