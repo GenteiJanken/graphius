@@ -3,7 +3,7 @@
 	created by Josh Douglass-Molloy for a Pirate-Kart type thing
 ]]--
 SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 600
+SCREEN_HEIGHT = 800
 
 DEFAULT_COLOUR = {255, 255, 255, 255} 
 WINDOW_COLOUR = {120, 102, 255, 150}
@@ -13,6 +13,7 @@ NODE_COLOURS = {
 	BLUE = {0, 0, 255},
 	GREEN = {0, 255, 0}	}
 
+SHIP_COLOUR = {143, 0, 255} --violet
 
 
 
@@ -28,6 +29,9 @@ function love.load()
 	techgraph:init()
 
 	--initialise entities
+	
+	
+	
 end
 
 
