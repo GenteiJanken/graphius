@@ -15,6 +15,9 @@ NODE_COLOURS = {
 
 SHIP_COLOUR = {143, 0, 255} --violet
 
+ENEMY_COLOUR = {250, 230, 90} --yellow (maize)
+
+BULLET_COLOUR = {245, 245, 220} --beige
 
 
 function love.load()
@@ -29,7 +32,7 @@ function love.load()
 	techgraph:init()
 
 	--initialise entities
-	
+	player:init()
 	
 	
 end
@@ -40,8 +43,24 @@ function love.update(dt)
 	--if in-game, update
 	if game_state == "FLIGHT" then
 	--animate star background
-	stars:update(dt)
-
+		stars:update(dt)
+		
+		if love.keyboard.isDown('w') or love.keyboard.isDown('up') then
+			player.pos.y = player.pos.y - player.attr.speed * dt
+		end
+		
+		if love.keyboard.isDown('a') or love.keyboard.isDown('left') then
+			player.pos.x = player.pos.x - player.attr.speed * dt
+		end
+		
+		if love.keyboard.isDown('s') or love.keyboard.isDown('down') then
+			player.pos.y = player.pos.y + player.attr.speed * dt
+		end
+		
+		if love.keyboard.isDown('d') or love.keyboard.isDown('right') then
+			player.pos.x = player.pos.x + player.attr.speed * dt
+		end
+			
 	end
 	
 end
@@ -56,11 +75,8 @@ function love.draw()
 	--in GRAPH mode, draw graph
 	if game_state == "GRAPH" or game_state == "DRAG" then
 		techgraph:draw()
-	elseif game_state == "DRAG" then
-		techgraph:draw()
-		
-		
-			
+	elseif game_state == "FLIGHT" then
+		player:draw()	
 	end
 	
 	
@@ -88,7 +104,11 @@ function love.keypressed(key)
 	--toggles between graph view and flight view
 	if key == 'tab' then
 		game_state = game_state == "FLIGHT" and "GRAPH" or "FLIGHT"
+	elseif key == 'space' and game_state == "FLIGHT" then
+		--fire bullet
+
 	end
+
 		
 end
 
@@ -101,18 +121,77 @@ end
 
 ]]--
 
+entities = {
+
+	bullets = {},
+	enemies = {},
+	shards = {}
+
+}
+
+player = {}
+function player:init()
+	self.radius = SCREEN_HEIGHT / 30
+	self.hit_radius = self.radius / 5
+	self.pos = {
+			x = SCREEN_WIDTH / 2,
+			y = SCREEN_HEIGHT /2
+			
+	}
+	self.base_attr = {speed = 100}
+	self.attr = {speed = self.base_attr.speed}
+	self.draw_points = {
+		{self.radius * math.cos(math.rad(90)), -self.radius * math.sin(math.rad(90))}, --top	
+		{self.radius * math.cos(math.rad(210)), -self.radius * math.sin(math.rad(210))}, --left
+		{self.radius * math.cos(math.rad(330)), -self.radius * math.sin(math.rad(330))}, --right
+	
+	}
+
+end
+
+function player:upgrade()
 
 
+end
 
 
+function player:draw()
+	love.graphics.setColor(unpack(SHIP_COLOUR))
+	points = {}
+	
+	for _, v in ipairs(self.draw_points)do
+		table.insert(points, self.pos.x + v[1])
+		table.insert(points, self.pos.y + v[2])
+		
+	end
+
+	love.graphics.polygon("fill", points)
+	love.graphics.setColor(unpack(DEFAULT_COLOUR))
+end
+
+function player:update(dt)
+
+end
+
+Bullet = {}
+
+function Bullet:new(player, x, y)
+
+	setmetatable(o, self)
+end
 
 
+Enemy = {}
+
+function Enemy:new()
+
+end
 
 
+Shard = {}
+function Shard:new(x, y)
 
-
-
-
+end
 
 
 
@@ -281,7 +360,7 @@ end
 function stars:update(dt)
 	for i = 1, 3 do
 		for j = 1, 20 do
-			self.starmap[i][j].y = (self.starmap[i][j].y + (4 - i) * 4) % SCREEN_HEIGHT 
+			self.starmap[i][j].y = (self.starmap[i][j].y + (4 - i) * 2) % SCREEN_HEIGHT 
 		end
 	end
 end
